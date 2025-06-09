@@ -1,144 +1,113 @@
-# 📊 Report Walkthrough: Evidently AI Monitoring
+# 📘 Student Performance Evaluation with Evidently AI
 
-This section explains, step by step, how the Evidently AI report was generated and what each component means. The report evaluates model performance, data drift, and feedback sentiment using a synthetic dataset of student performance.
+## 👋 Introduction
 
----
+This document summarizes my familiarisation task using the Evidently AI framework to monitor student model performance. The aim was to detect any data drift, assess prediction accuracy, and explore student feedback using descriptor-based analysis. I used Evidently's modern metrics and visualization tools to create an end-to-end report that would support machine learning quality assurance in production-like setups.
 
-## 1. 📁 Input Datasets
+## 📂 Data Used
 
-For this project, I created two demo datasets of students with the following columns:
+Two synthetic datasets were created to simulate a real-world scenario:
 
-- `student_id`
-- `age`
-- `study_hours_per_week`
-- `previous_gpa`
-- `course_difficulty`
-- `actual_grade`
-- `predicted_grade`
-- `satisfaction_level`
-- `feedback_text`
+- `data/students_reference_dataset.csv`: Represents clean historical data.
+- `data/students_current_dataset.csv`: Simulates new incoming data that may differ in pattern.
 
-**Files used:**
+Each dataset includes:
 
-- `student_reference_dataset.csv`: Simulated "reference" data
-- `student_current_dataset.csv`: Simulated "current" production data
+- `student_id`, `age`, `study_hours_per_week`, `previous_gpa`, `course_difficulty`, `actual_grade`, `predicted_grade`, `satisfaction_level`, `feedback_text`
 
-Each row represents a student’s academic profile, satisfaction, and written feedback.
+The task is to evaluate whether the current data behaves similarly to reference data, and whether the model continues to perform well.
 
----
+## ⚙️ Methodology & Code Summary
 
-## 2. ⚙️ Dataset Definition
+The evaluation is implemented using the `evidently` library in Python.
 
-We explicitly define the column roles using `DataDefinition`, including:
+### Key Steps:
 
-- `regression`: Actual vs. predicted grade
-- `numerical_columns`: Input metrics
-- `text_columns`: Free-text feedback
+1. Load the datasets using Pandas.
+2. Define schema with `DataDefinition`, specifying:
+   - Numerical columns (e.g., `age`, `study_hours_per_week`)
+   - Categorical columns (e.g., `course_difficulty`)
+   - Text column: `feedback_text`
+3. Regression setup with `actual_grade` as target and `predicted_grade` as prediction
+4. Attach descriptors to the feedback text:
+   - **Sentiment** – measures polarity from -1 to +1
+   - **TextLength** – total characters
+   - **Contains** – flags specific words to detect issues or praise
+5. Generate the report using these Evidently presets:
+   - `DataSummaryPreset`
+   - `DataDriftPreset`
+   - `TextEvals`
+   - `MeanError`
+6. Save HTML report for visualization.
 
-**Descriptors used:**
+## 📊 Understanding the Metrics and Drift Scores
 
-- `Sentiment`: Overall polarity of the feedback text
-- `TextLength`: Number of characters per response
-- `Contains`: Looks for denial or negative indicators
+### ✅ Regression Metrics
 
----
+Used to evaluate prediction performance:
 
-## 3. 📄 Report Configuration
+- **Mean Error**: Measures average difference between predicted and actual grades. Ideal value is close to 0.
+- **MAE** (Mean Absolute Error): Absolute average difference; robust against direction.
+- **RMSE** (Root Mean Squared Error): Penalizes larger errors more than MAE.
 
-The report uses these Evidently presets:
+### 🔄 Drift Score (KS-Test)
 
-- `DataSummaryPreset`: Summary statistics for each column
-- `DataDriftPreset`: Statistical comparison between reference and current datasets
-- `TextEvals`: Summarizes feedback descriptors
+- Kolmogorov-Smirnov Test (KS-test) is used for continuous numerical features.
+- Measures the difference between distributions in reference and current datasets.
+- A **p-value < 0.05** indicates that the feature has changed statistically (drift detected).
 
-**Regression metrics (optional):**
+### 📊 Chi-Square p_value (Categorical Drift)
 
-- `MeanError`
-- `MeanAbsoluteError`
-- `RootMeanSquaredError`
+- Chi-Square Test is used for categorical features.
+- It compares the frequency distribution of categories between the reference and current datasets.
+- A **p-value < 0.05** means there’s a statistically significant shift in category frequencies (drift detected).
+- Best used when each category has a sufficient number of samples.
 
----
+### 📈 Z-test p_value (Performance Drift)
 
-## 4. 📊 Key Report Sections
+- Z-test is typically used for comparing proportions, such as accuracy, error rates, or prediction distributions.
+- It checks whether the difference between two proportions (like success rates in classification) is statistically significant.
+- A **p-value < 0.05** suggests that the model's performance or output distribution has changed (performance drift detected).
+- Often applied in evaluating binary classification outputs or performance over time.
 
-### ➤ Metadata Section
+## ❗ Test Section
 
-| Metric            | Current | Reference |
-| ----------------- | ------- | --------- |
-| id column         | None    | None      |
-| target column     | None    | None      |
-| prediction column | None    | None      |
-| date column       | None    | None      |
+Auto-generated pass/fail tests are included to:
 
-❗ _This means we didn’t assign `id`, `target`, or `prediction` roles explicitly in this section of the report. These should be assigned in `DataDefinition()` using regression or classification._
+- Check data quality (e.g., missing values, zero variance)
+- Identify significant drifts
+- Detect text issues via rule-based logic (e.g., negative wording)
 
----
+## 📈 Findings from the Initial Experiment
 
-### ➤ Data Summary
+### 🟩 Stable Features
 
-Provides count, min, max, mean, and standard deviation for each numerical feature.
+- `study_hours_per_week`, `actual_grade`, `predicted_grade`, `satisfaction_level`, and `course_difficulty` showed no drift.
+- Feedback sentiment remained stable (mean ≈ 0.68).
 
-Useful for:
+### ⚠️ Drifted Features (3/12 columns, 25%)
 
-- Checking for missing values
-- Detecting unexpected shifts in distribution
+- **age**  
+  p = 0.036 → Drift detected.
 
----
+- **previous_gpa**  
+  p = 0.0002 → Strong drift. Current students show lower GPA.
 
-### ➤ Data Drift
+- **TextLength**  
+  Significantly higher variance; longer feedback responses in the current dataset.
 
-**Statistical tests used:**
+## 📝 Text Descriptor Observations
 
-- Numerical: KS-test (Kolmogorov-Smirnov)
-- Categorical: Chi-square test
+- Positive highlights like "excellent" and "rewarding" appear more often.
+- Some feedbacks flagged as unclear ("confusing", "repetitive") but were within expected limits.
 
-You’ll see a **"drift score"** and whether a column has statistically changed.  
-**Drift is flagged when `p-value < 0.05`.**
+## 📋 Concepts Learned and Documented
 
----
+### 📚 New Concepts
 
-### ➤ Regression Metrics
+- Data Drift vs. Concept Drift
+- KS-test and p-value interpretation
+- Descriptors in text-based evaluation
+- Regression error metrics and how to interpret them
 
-These are only shown if `Regression(target=..., prediction=...)` is defined.
-
-- **Mean Error**: Average difference between prediction and true grade
-- **MAE**, **RMSE**: Standard regression metrics
-
----
-
-### ➤ Text Descriptors
-
-Evaluates the `feedback_text` column:
-
-- **Sentiment**: Value from -1 (negative) to +1 (positive)
-- **TextLength**: Number of characters
-- **Contains**: Flags presence of phrases like "sorry", "difficulties"
-
----
-
-### ➤ Tests Section
-
-Auto-generated pass/fail conditions based on:
-
-- Drift thresholds
-- Data quality (missing values, zero variance, etc.)
-- Text-based rules (e.g. _"no feedback should contain denial terms"_)
-
----
-
-## 5. 💡 How to Read the Report
-
-Each tab in the HTML file represents a different evaluation:
-
-- **Data Summary** → Feature-wise distribution stats
-- **Data Drift** → Whether features statistically changed
-- **Text Evals** → Sentiment & length of student feedback
-- **Test Results** → Automated rule-based validations
-
----
-
-## ✅ Next Steps
-
-- Confirm if we should repeat this with real datasets
-- Add MLflow integration for storing experiment results
-- Expand feedback descriptors using LLM-based sentiment (optional)
+**📄 Report Saved**: `reports/student_full_evaluation_report.html`
