@@ -12,6 +12,11 @@ In this report, we will start by explaining the datasets used in the project, an
 
 ## Machine Learning Monitoring
 
+**Machine learning (ML) monitoring**: is the continuous process of tracking the performance, behavior, and data quality of ML models in production to ensure their reliability and accuracy by detecting changes or failures. This process can give us an overview of the model as logs, reports and even alerts. 
+ML models can degrade overtime due to many factors like `data drifts`, `concept drift` and `feature importance Change` making continuous monitoring essential to keep the model trustworthy.
+
+There are many tools for monitoring ML models like `Evidently AI` and `MLflow`. In this report we will focus on `Evidently AI`.
+
 ## Datasets
 
 To use Evidently AI, we need two datasets:
