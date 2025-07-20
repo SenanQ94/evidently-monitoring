@@ -8,7 +8,7 @@ Since the data is dynamic by itself, we need to continuously monitor changes in 
 
 To familiarize ourselves with Evidently AI, we used ChatGPT to generate synthetic datasets that simulate data from a production ML model.
 
-In this report, we will start by explaining the datasets used in the project, and then demonstrate how Evidently AI is used to create a report containing evaluation metrics and performance monitoring.
+In this report, we will start by taking an overview of the Machine Learning Monitoring and explaining the datasets used in the project and then demonstrate how Evidently AI is used to create a report containing evaluation metrics and performance monitoring.
 
 ## Machine Learning Monitoring
 
