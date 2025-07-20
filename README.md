@@ -10,6 +10,8 @@ To familiarize ourselves with Evidently AI, we used ChatGPT to generate syntheti
 
 In this report, we will start by explaining the datasets used in the project, and then demonstrate how Evidently AI is used to create a report containing evaluation metrics and performance monitoring.
 
+## Machine Learning Monitoring
+
 ## Datasets
 
 To use Evidently AI, we need two datasets:
@@ -151,7 +153,7 @@ The dataset includes the following columns:
 
 First section shows an overview of the data we have (e.g. number of columns, rows, missing values, categorical columns, numeric columns …etc.)
 
-![alt text](image.png)
+<img width="1816" height="865" alt="1" src="https://github.com/user-attachments/assets/b67fd69f-6805-4480-ba26-a9ea1036a70d" />
 
 Second section: shows relevant statistics and visualizes distribution for each column. The stats are different based on the column type (numerical, categorical, text, datetime).
 
