@@ -157,7 +157,7 @@ First section shows an overview of the data we have (e.g. number of columns, row
 
 Second section: shows relevant statistics and visualizes distribution for each column. The stats are different based on the column type (numerical, categorical, text, datetime).
 
-![alt text](image-1.png)
+<img width="1807" height="926" alt="2" src="https://github.com/user-attachments/assets/349aea20-3886-4051-8b0e-fea1cb2e3942" />
 
 ### 2. Dataset Drift:
 
@@ -166,7 +166,8 @@ Overall dataset drift returns the share of drifting columns in the Dataset. By d
 
 In our project there is no dataset drift detected as the share of drifted columns is 25%.
 
-![alt text](image-2.png)
+<img width="3508" height="3102" alt="3" src="https://github.com/user-attachments/assets/f0b75c35-fb0f-4940-8e73-e9ce9ef08ab2" />
+
 
 The threshold of **P-value** in Evidently is set by default to **0.05**. Based on this threshold, Evidently considers the features as drifted if **P-value < 0.05**.
 
@@ -186,7 +187,7 @@ The threshold of **P-value** in Evidently is set by default to **0.05**. Based o
 
 It shows the text-based evaluations we did like sentiment and Clarity Issues.
 
-![alt text](image-3.png)
+<img width="3508" height="4092" alt="4" src="https://github.com/user-attachments/assets/9552ed72-db1e-42af-b9c9-1c8051f6f2ac" />
 
 - Positive highlights like "excellent" and "rewarding" appear more often in the current dataset 29% compared to the reference dataset 24% which suggest a possible improvement in user sentiment or satisfaction.
 - Some feedback flagged as unclear because they have one or more of these words ["confusing", "unclear", "repetitive"] but were within accepted limits as the change is not significant (8% in current dataset, 9% in reference dataset).
@@ -199,7 +200,8 @@ From the report, we can see:
 - The difference between the two is very small (-1.74 for the current dataset and -1.72 for the reference), which suggests that the model's behavior is stable over time and there is no significant shift in prediction bias.
 - The **Standard Deviation (Std)** is smaller for the current dataset (0.99) compared to the reference dataset (1.40) which means the current model predictions are more stable (the differences between predicted and actual values don't vary widly).
 
-![alt text](image-4.png)
+<img width="1815" height="927" alt="5" src="https://github.com/user-attachments/assets/0578b4f6-d833-4cdd-b946-dc2778e5ab4e" />
+
 
 ### 5. Test Section
 
@@ -210,7 +212,8 @@ Auto-generated pass/fail tests are included to:
 
 Example of failed tests:
 
-![alt text](image-5.png)
+<img width="1797" height="442" alt="6" src="https://github.com/user-attachments/assets/9e1ba019-0770-41cd-a473-8ec22a8696d7" />
+
 
 ## Conclusion
 
